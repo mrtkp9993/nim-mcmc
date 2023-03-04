@@ -1,12 +1,18 @@
-# This is just an example to get you started. You may wish to put all of your
-# tests into a single file, or separate them into multiple `test1`, `test2`
-# etc. files (better names are recommended, just make sure the name starts with
-# the letter 't').
-#
-# To run these tests, simply execute `nimble test`.
-
 import unittest
+import std/math
 
-import nim_mcmc
-test "can add":
-  check add(5, 5) == 10
+include nim_mcmc
+
+proc testFun(x: float): float =
+  if (x < 0):
+    return 0
+  else:
+    return exp(-x)
+
+suite "MCMC Tests":
+  setup:
+    var sampleSize = 10000
+    var sampleTestFun = mcmc(testFun, sampleSize, 2000)
+
+  test "correct length":
+    check(sampleTestFun.len == sampleSize)
