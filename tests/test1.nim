@@ -19,8 +19,10 @@ proc testNormal(x: float): float =
 suite "MCMC Tests":
   setup:
     var sampleSize = 100000
-    var sampleTestFun = mcmc(testFun, sampleSize, 20000)
-    var sampleTestNormal = mcmc(testNormal, sampleSize, 20000)
+    var burnin = sampleSize div 4
+    var thinning = 4
+    var sampleTestFun = mcmc(testFun, sampleSize, burnin, thinning)
+    var sampleTestNormal = mcmc(testNormal, sampleSize, burnin, thinning)
 
   test "correct length":
     check(sampleTestFun.len == sampleSize)
@@ -29,7 +31,10 @@ suite "MCMC Tests":
   test "correct statistics":
     var statistics: RunningStat
     statistics.push(sampleTestNormal)
-    # Naive implementation, bad results
+    echo "Mean difference: ", abs(statistics.mean() - 3.0),
+        ", Variance difference: ", abs(statistics.variance() - 0.7)
+    # Naive implementation - bad results
     check(abs(statistics.mean() - 3.0) < 0.01)
+    # Need to decrease variance difference
     check(abs(statistics.variance() - 0.7) < 1)
 

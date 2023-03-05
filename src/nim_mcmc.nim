@@ -8,12 +8,13 @@ const lowerCaseAscii = 97..122
 # Direct translation of my C++ implementation
 # as a first version
 # https://github.com/mrtkp9993/Cpp-Examples/blob/master/lib/numericCppExamples/metropolisHastings.h
-proc mcmc(fun: (float) -> float, ncount: int, burnInPeriod: int): seq[float] =
+proc mcmc(fun: (float) -> float, ncount: int, burnInPeriod: int,
+    thinning: int): seq[float] =
   randomize()
-  result = newSeq[float](ncount + burnInPeriod)
+  result = newSeq[float](burnInPeriod + ncount * thinning)
   result[0] = 1.0
 
-  for i in countup(1, ncount + burnInPeriod - 1):
+  for i in countup(1, burnInPeriod + (ncount * thinning) - 1):
     var currentx: float = result[i - 1]
     var proposedx: float = currentx + gauss()
     var A: float = min(1, fun(proposedx) / fun(currentx))
@@ -22,7 +23,9 @@ proc mcmc(fun: (float) -> float, ncount: int, burnInPeriod: int): seq[float] =
     else:
       result[i] = currentx
 
-  delete(result, 0..burnInPeriod - 1)
+  result = collect(newseq):
+    for i in countup(burnInPeriod, burnInPeriod + (ncount * thinning) - 1, thinning):
+      result[i]
   return result
 
 proc writeToFile(res: seq[float]) =
