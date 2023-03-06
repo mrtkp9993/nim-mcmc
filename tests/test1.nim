@@ -22,8 +22,9 @@ suite "MCMC Tests":
     var sampleSize = 200000
     var burnin = sampleSize div 4
     var thinning = 4
-    var sampleTestFun = mcmc(testFun, sampleSize, burnin, thinning)
-    var sampleTestNormal = mcmc(testNormal, sampleSize, burnin, thinning)
+    var chainCount = 4
+    var sampleTestFun = mcmc(testFun, sampleSize, burnin, thinning, chainCount)
+    var sampleTestNormal = mcmc(testNormal, sampleSize, burnin, thinning, chainCount)
 
   test "correct length":
     check(sampleTestFun.len == sampleSize)
