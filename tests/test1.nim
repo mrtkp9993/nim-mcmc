@@ -1,6 +1,7 @@
 import unittest
 import std/math
 import std/stats
+import os
 
 include nim_mcmc
 
@@ -18,7 +19,7 @@ proc testNormal(x: float): float =
 
 suite "MCMC Tests":
   setup:
-    var sampleSize = 100000
+    var sampleSize = 200000
     var burnin = sampleSize div 4
     var thinning = 4
     var sampleTestFun = mcmc(testFun, sampleSize, burnin, thinning)
@@ -28,13 +29,18 @@ suite "MCMC Tests":
     check(sampleTestFun.len == sampleSize)
     check(sampleTestNormal.len == sampleSize)
 
-  test "correct statistics":
+  test "correct statistics for Normal dist.":
     var statistics: RunningStat
     statistics.push(sampleTestNormal)
     echo "Mean difference: ", abs(statistics.mean() - 3.0),
-        ", Variance difference: ", abs(statistics.variance() - 0.7)
+        ", Variance difference: ", abs(statistics.variance() - 0.7),
+        ", Skewness difference: ", abs(statistics.skewness() - 0.0),
+        ", Kurtosis difference: ", abs(statistics.kurtosis() - 0.0)
     # Naive implementation - bad results
     check(abs(statistics.mean() - 3.0) < 0.01)
     # Need to decrease variance difference
     check(abs(statistics.variance() - 0.7) < 1)
 
+  test "write to file & file exists":
+    var fNameTestFun = writeToFile(sampleTestFun)
+    check(fileExists(fNameTestFun))

@@ -28,10 +28,12 @@ proc mcmc(fun: (float) -> float, ncount: int, burnInPeriod: int,
       result[i]
   return result
 
-proc writeToFile(res: seq[float]) =
+proc writeToFile(res: seq[float]): string =
   var fname = $6.newSeqWith(lowerCaseAscii.rand.char).join & ".txt"
   let f = open(fname, fmWrite)
   defer: f.close()
 
   for r in res:
     f.writeLine(r)
+
+  return fname
