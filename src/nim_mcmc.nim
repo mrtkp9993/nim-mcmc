@@ -16,7 +16,7 @@ proc mcmc(fun: (float) -> float, ncount: int, burnInPeriod: int,
 
   for i in countup(1, burnInPeriod + (ncount * thinning) - 1):
     var currentx: float = result[i - 1]
-    var proposedx: float = currentx + gauss()
+    var proposedx: float = currentx + gauss(0, 4)
     var A: float = min(1, fun(proposedx) / fun(currentx))
     if (rand(1.0) < A):
       result[i] = proposedx
